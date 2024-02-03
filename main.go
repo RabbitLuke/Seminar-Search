@@ -1,17 +1,20 @@
+// main.go
 package main
 
-
-import ("github.com/gin-gonic/gin")
-   
+import (
+	"fmt"
+    dbSetup "github.com/RabbitLuke/seminar-search/dbSetup"
+)
 
 func main() {
-	router := gin.Default()
-   
-	router.GET("/ping", func(c *gin.Context) {
-	 c.JSON(200, gin.H{
-	  "message": "pong",
-	 })
-	})
-   
-	router.Run(":8080")
-   }
+    err := dbSetup.InitDB()
+    if err != nil {
+        fmt.Println("Error initializing the database:", err)
+        return
+    }
+    defer dbSetup.CloseDB()
+    
+
+    // Your application logic here
+    // You can use the 'db' variable from dbSetup package to perform database operations
+}
