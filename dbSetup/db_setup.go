@@ -7,18 +7,18 @@ import (
     _ "github.com/go-sql-driver/mysql"
 )
 
-var db *sql.DB
+var DB *sql.DB
 
 // InitDB initializes the database connection
 func InitDB() error {
     connectionString := "root:Banana10#@tcp(localhost:3306)/seminarsearch"
     var err error
-    db, err = sql.Open("mysql", connectionString)
+    DB, err = sql.Open("mysql", connectionString)
     if err != nil {
         return err
     }
 
-    err = db.Ping()
+    err = DB.Ping()
     if err != nil {
         return err
     }
@@ -30,8 +30,8 @@ func InitDB() error {
 
 // CloseDB closes the database connection
 func CloseDB() {
-    if db != nil {
-        db.Close()
+    if DB != nil {
+        DB.Close()
         fmt.Println("Closed the database connection")
     }
 }
