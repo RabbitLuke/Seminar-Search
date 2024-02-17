@@ -28,7 +28,7 @@ func CreateHandler(c *gin.Context) {
 		return
 	}
 
-	err := queryUsers.InsertUser(reqBody.Name)
+	err := query.InsertFaculty(reqBody.Name)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -44,7 +44,7 @@ func DeleteHandler(c *gin.Context) {
 		return
 	}
 
-	err := queryUsers.DeleteUser(reqBody.FacultyID)
+	err := query.DeleteFaculty(reqBody.FacultyID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -60,7 +60,7 @@ func UpdateHandler(c *gin.Context) {
         return
     }
 
-    err := queryUsers.UpdateUser(reqBody.FacultyID, reqBody.Name)
+    err := query.UpdateFaculty(reqBody.FacultyID, reqBody.Name)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -70,7 +70,7 @@ func UpdateHandler(c *gin.Context) {
 }
 
 func SelectHandler(c *gin.Context) {
-    users, err := queryUsers.SelectUsers()
+    users, err := query.SelectFaculties()
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -87,7 +87,7 @@ func SelectByIDHandler(c *gin.Context) {
         return
     }
 
-    user, err := queryUsers.SelectUserByID(facultyID)
+    user, err := query.SelectFacultyByID(facultyID)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
