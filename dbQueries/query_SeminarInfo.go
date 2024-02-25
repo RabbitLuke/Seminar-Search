@@ -10,22 +10,22 @@ import (
 type SeminarInfo struct {
 	SeminarID int `json:"seminarID"`
 	Title string `json:"Title"`
-	FacultyID int `json:"Faculty"`
+	FacultyID int `json:"facultyID"`
 	Duration float32 `json:"Duration"`
-	Date time.Time `json:"Date"`
-	Time time.Time `json:"Time"`
+	Date string `json:"Date"`
+	Time string `json:"Time"`
 	Location string `json:"Location"`
 	NoOfSeats int `json:"no_of_seats"`
 	CoverPhoto string `json:"cover_photo"`
 }
 
-func InsertSeminar(title string, facultyID int, duration float32, date time.Time, time time.Time, location string, noOfSeats string, coverPhoto string) error {
+func InsertSeminar(title string, facultyID int, duration float32, date string, time string, location string, noOfSeats int, coverPhoto string) error {
 	// Ensure that the database is initialized
 	if dbSetup.DB == nil {
 		return fmt.Errorf("database is not initialized")
 	}
 
-	stmt, err := dbSetup.DB.Prepare("INSERT INTO seminar_info (Title, Faculty, Duration, Date, Time, Location, no_of_seats, cover_photo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := dbSetup.DB.Prepare("INSERT INTO seminar_info (Title, facultyID, Duration, Date, Time, Location, no_of_seats, cover_photo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return err
 	}
@@ -61,18 +61,34 @@ func DeleteSeminar(seminarID int) error {
 	return nil
 }
 
-func UpdateSeminar(seminarID int, title string, facultyID int, duration float32, date time.Time, time time.Time, location string, noOfSeats string, coverPhoto string) error {
+func UpdateSeminar(seminarID int, title string, facultyID int, duration float32, dateString string, timeString string, location string, noOfSeats int, coverPhoto string) error {
 	if dbSetup.DB == nil {
 		return fmt.Errorf("database is not initialized")
 	}
 
-	stmt, err := dbSetup.DB.Prepare("UPDATE seminar_info SET Title = ?, Faculty = ?, Duration = ?, Date = ?, Time = ?, Location = ?, no_of_seats = ?, cover_photo = ? WHERE seminarID = ?")
+	// Parse the date string into a time.Time value
+	date, err := time.Parse("2006-01-02", dateString)
+	if err != nil {
+		return fmt.Errorf("error parsing date: %v", err)
+	}
+
+	// Parse the time string into a time.Time value
+	timeOfDay, err := time.Parse("15:04:05", timeString)
+	if err != nil {
+		return fmt.Errorf("error parsing time: %v", err)
+	}
+
+	// Combine the date and time into a single time.Time value
+	dateTime := time.Date(date.Year(), date.Month(), date.Day(), timeOfDay.Hour(), timeOfDay.Minute(), timeOfDay.Second(), 0, time.UTC)
+
+
+	stmt, err := dbSetup.DB.Prepare("UPDATE seminar_info SET Title = ?, facultyID = ?, Duration = ?, Date = ?, Time = ?, Location = ?, no_of_seats = ?, cover_photo = ? WHERE seminarID = ?")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(title, facultyID, duration, date, time, location, noOfSeats, coverPhoto, seminarID)
+	_, err = stmt.Exec(title, facultyID, duration, dateTime, location, noOfSeats, coverPhoto, seminarID)
 	if err != nil {
 		return err
 	}
