@@ -70,12 +70,15 @@ func UpdateUser(userID int, f_name string, l_name string, faculty int, email str
 		return err
 	}
 	defer stmt.Close()
-
-	_, err = stmt.Exec(userID, f_name, l_name, faculty, email, profile_pic, password)
+	//Please make sure that you add the ID at the END of the statement! Otherwise it won't write to the DB
+	res, err := stmt.Exec(f_name, l_name, faculty, email, profile_pic, password, userID)
 	if err != nil {
+		fmt.Println("Error executing update query:", err)
 		return err
 	}
-
+	
+	rowsAffected, _ := res.RowsAffected()
+	fmt.Printf("Rows affected: %d\n", rowsAffected)
 	fmt.Printf("User with ID %d updated successfully!\n", userID)
 	return nil
 }

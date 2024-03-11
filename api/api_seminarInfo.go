@@ -96,7 +96,7 @@ func CreateSeminarHandler(c *gin.Context) {
  }
 
  func SelectSeminarByIDHandler(c *gin.Context) {
-     seminarIDStr := c.Param("SeminarID")
+     seminarIDStr := c.Param("seminarID")
      seminarID, err := strconv.Atoi(seminarIDStr)
      if err != nil {
          c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid seminarID"})

@@ -46,22 +46,6 @@ func CreateUserHandler(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
-// func DeleteUserHandler(c *gin.Context) {
-// 	Userid, err: = strconv.Atoi(c.Param("UserID"))
-// 	var reqBody DeleteAUserRequest
-// 	if err := c.ShouldBindJSON(&reqBody); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	err := query.DeleteUser(UserID)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	c.Status(http.StatusOK)
-// }
 
 func DeleteUserHandler(c *gin.Context) {
     // Extract UserID from the URL parameter

@@ -35,7 +35,7 @@ func main() {
 	apiSeminar := router.Group("/seminar")
 	{
 		apiSeminar.POST("/create", api.CreateSeminarHandler)
-		apiSeminar.DELETE("/remove", api.DeleteSeminarHandler)
+		apiSeminar.DELETE("/remove/:seminarID", api.DeleteSeminarHandler)
 		apiSeminar.PUT("/update", api.UpdateSeminarHandler)
 		apiSeminar.GET("/all", api.SelectSeminarHandler)
 		apiSeminar.GET("/distinct/:seminarID", api.SelectSeminarByIDHandler)
@@ -45,9 +45,22 @@ func main() {
 	{
 		apiUser.POST("/create", api.CreateUserHandler)
 		apiUser.DELETE("/remove/:UserID", api.DeleteUserHandler)
-		apiUser.PUT("/update", api.UpdateUserHandler)
+		apiUser.PUT("/update/", api.UpdateUserHandler)
 		apiUser.GET("/distinct/:UserID", api.SelectUserByIDHandler)
-	}	
+	}
+	
+	apiHost := router.Group("/host")
+	{
+		apiHost.POST("/create", api.CreateHostHandler)
+		apiHost.DELETE("/remove/:HostID", api.DeleteHostHandler)
+		apiHost.PUT("/update", api.UpdateHostHandler)
+		apiHost.GET("/distinct/:HostID", api.SelectHostByIDHandler)
+	}
+
+	apiQualification := router.Group("/qual")
+	{
+		apiQualification.GET("/all", api.SelectQualificationHandler)
+	}
 
 	if err := router.Run(":8080"); err != nil {
 		panic(err)

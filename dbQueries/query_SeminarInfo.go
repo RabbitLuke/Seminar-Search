@@ -112,7 +112,7 @@ func SelectSeminars() ([]SeminarInfo, error) {
 
 	for rows.Next() {
 		var seminar SeminarInfo
-		if err := rows.Scan(&seminar.SeminarID); err != nil {
+		if err := rows.Scan(&seminar.SeminarID, &seminar.Title, &seminar.Duration, &seminar.FacultyID, &seminar.Date, &seminar.Time, &seminar.Location, &seminar.NoOfSeats, &seminar.CoverPhoto); err != nil {
 			return nil, err
 		}
 		seminars = append(seminars, seminar)
@@ -127,10 +127,11 @@ func SelectSeminarByID(seminarID int) (*SeminarInfo, error) {
 	}
 
 	var seminar SeminarInfo
-	err := dbSetup.DB.QueryRow("SELECT * FROM seminar_info WHERE seminarID = ?", seminarID).Scan(&seminar.SeminarID)
+	err := dbSetup.DB.QueryRow("SELECT * FROM seminar_info WHERE seminarID = ?", seminarID).Scan(&seminar.SeminarID, &seminar.Title, &seminar.Duration, &seminar.FacultyID, &seminar.Date, &seminar.Time, &seminar.Location, &seminar.NoOfSeats, &seminar.CoverPhoto)
 	if err != nil {
 		return nil, err
 	}
 
 	return &seminar, nil
 }
+
