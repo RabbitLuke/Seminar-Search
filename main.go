@@ -9,6 +9,7 @@ import (
 	dbSetup "github.com/RabbitLuke/seminar-search/dbSetup"
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors"
+	auth "github.com/RabbitLuke/seminar-search/auth"
 )
 
 func main() {
@@ -61,6 +62,9 @@ func main() {
 	{
 		apiQualification.GET("/all", api.SelectQualificationHandler)
 	}
+
+	router.POST("/authenticate", auth.Authenticate)
+	router.POST("/refresh-token", auth.RefreshToken)
 
 	if err := router.Run(":8080"); err != nil {
 		panic(err)
