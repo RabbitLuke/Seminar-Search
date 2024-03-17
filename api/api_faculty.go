@@ -23,7 +23,7 @@ type UpdateUserRequest struct {
 
 func CreateHandler(c *gin.Context) {
 	var reqBody CreateUserRequest
-	if err := c.BindJSON(&reqBody); err != nil {
+	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -38,13 +38,13 @@ func CreateHandler(c *gin.Context) {
 }
 
 func DeleteHandler(c *gin.Context) {
-	var reqBody DeleteUserRequest
-	if err := c.BindJSON(&reqBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+    facultyID, err := strconv.Atoi(c.Param("facultyID"))
+	if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid facultyID"})
+        return
+    }
 
-	err := query.DeleteFaculty(reqBody.FacultyID)
+	err = query.DeleteFaculty(facultyID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -55,7 +55,7 @@ func DeleteHandler(c *gin.Context) {
 
 func UpdateHandler(c *gin.Context) {
     var reqBody UpdateUserRequest
-    if err := c.BindJSON(&reqBody); err != nil {
+    if err := c.ShouldBindJSON(&reqBody); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }

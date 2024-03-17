@@ -1,4 +1,4 @@
-package api
+ package api
 
 import (
 	"net/http"
@@ -17,6 +17,8 @@ type CreateSeminarRequest struct {
 	NoOfSeats int `json:"no_of_seats"`
 	CoverPhoto string `json:"cover_photo"`
 }
+
+
 
 type DeleteSeminarRequest struct {
 	SeminarID int `json:"seminarID"`
@@ -37,7 +39,7 @@ type UpdateSeminarRequest struct {
 
 func CreateSeminarHandler(c *gin.Context) {
 	var reqBody CreateSeminarRequest
-	if err := c.BindJSON(&reqBody); err != nil {
+	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -48,64 +50,64 @@ func CreateSeminarHandler(c *gin.Context) {
 		return
 	}
 
-	c.Status(http.StatusCreated)
-}
+ 	c.Status(http.StatusCreated)
+ }
 
-func DeleteSeminarHandler(c *gin.Context) {
-	var reqBody DeleteSeminarRequest
-	if err := c.BindJSON(&reqBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err := query.DeleteFaculty(reqBody.SeminarID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.Status(http.StatusOK)
-}
-
-func UpdateSeminarHandler(c *gin.Context) {
-    var reqBody UpdateSeminarRequest
-    if err := c.BindJSON(&reqBody); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
-
-    err := query.UpdateSeminar(reqBody.SeminarID, reqBody.Title, reqBody.FacultyID, reqBody.Duration, reqBody.Date, reqBody.Time, reqBody.Location, reqBody.NoOfSeats, reqBody.CoverPhoto)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-
-    c.Status(http.StatusOK)
-}
-
-func SelectSeminarHandler(c *gin.Context) {
-    users, err := query.SelectSeminars()
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-
-    c.JSON(http.StatusOK, users)
-}
-
-func SelectSeminarByIDHandler(c *gin.Context) {
-    seminarIDStr := c.Param("SeminarID")
-    seminarID, err := strconv.Atoi(seminarIDStr)
-    if err != nil {
+ func DeleteSeminarHandler(c *gin.Context) {
+ 	seminarID, err := strconv.Atoi(c.Param("seminarID"))
+ 	if err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid seminarID"})
         return
     }
 
-    user, err := query.SelectSeminarByID(seminarID)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
+ 	err = query.DeleteSeminar(seminarID)
+ 	if err != nil {
+ 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+ 		return
+ 	}
 
-    c.JSON(http.StatusOK, user)
+ 	c.Status(http.StatusOK)
+ }
+
+ func UpdateSeminarHandler(c *gin.Context) {
+     var reqBody UpdateSeminarRequest
+     if err := c.ShouldBindJSON(&reqBody); err != nil {
+         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+         return
+     }
+
+     err := query.UpdateSeminar(reqBody.SeminarID, reqBody.Title, reqBody.FacultyID, reqBody.Duration, reqBody.Date, reqBody.Time, reqBody.Location, reqBody.NoOfSeats, reqBody.CoverPhoto)
+     if err != nil {
+         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+         return
+     }
+
+     c.Status(http.StatusOK)
+ }
+
+ func SelectSeminarHandler(c *gin.Context) {
+     users, err := query.SelectSeminars()
+     if err != nil {
+         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+         return
+     }
+
+     c.JSON(http.StatusOK, users)
+ }
+
+ func SelectSeminarByIDHandler(c *gin.Context) {
+     seminarIDStr := c.Param("seminarID")
+     seminarID, err := strconv.Atoi(seminarIDStr)
+     if err != nil {
+         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid seminarID"})
+         return
+     }
+
+     user, err := query.SelectSeminarByID(seminarID)
+     if err != nil {
+         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+         return
+     }
+
+     c.JSON(http.StatusOK, user)
 }
