@@ -3,6 +3,7 @@ package query
 
 import (
 	"fmt"
+
 	"github.com/RabbitLuke/seminar-search/dbSetup"
 )
 

@@ -2,17 +2,18 @@ package query
 
 import (
 	"fmt"
+
 	"github.com/RabbitLuke/seminar-search/dbSetup"
 )
 
-type UserInfo struct{
-	UserId      int `json:"UserID"`
+type UserInfo struct {
+	UserId      int    `json:"UserID"`
 	F_name      string `json:"First_Name"`
 	L_name      string `json:"Last_Name"`
-	Faculty      int `json:"Faculty"`
-	Email      string `json:"Email"`
-	Profile_pic      string `json:"Profile_pic"`
-	Password      string `json:"Password"`
+	Faculty     int    `json:"Faculty"`
+	Email       string `json:"Email"`
+	Profile_pic string `json:"Profile_pic"`
+	Password    string `json:"Password"`
 }
 
 func InsertUser(f_name string, l_name string, faculty int, email string, profile_pic string, password string) error {
@@ -76,7 +77,7 @@ func UpdateUser(userID int, f_name string, l_name string, faculty int, email str
 		fmt.Println("Error executing update query:", err)
 		return err
 	}
-	
+
 	rowsAffected, _ := res.RowsAffected()
 	fmt.Printf("Rows affected: %d\n", rowsAffected)
 	fmt.Printf("User with ID %d updated successfully!\n", userID)
@@ -95,4 +96,86 @@ func SelectUserByID(userID int) (*UserInfo, error) {
 	}
 
 	return &user, nil
+}
+
+func GetUserFacultyAndSeminary(email string) (*GetFacultySeminars, error) {
+
+	//return get user faculty and seminars linked to faculty
+	var facultyQuery GetFaculty
+	err := dbSetup.DB.QueryRow(`SELECT 
+	ui.Faculty AS 'FacultyID',
+	f.Name AS 'FacultyName'
+	FROM user_information ui
+	JOIN faculty f ON ui.Faculty = f.facultyID
+	WHERE Email = ?`, email).Scan(&facultyQuery.FacultyID, &facultyQuery.FacultyName)
+	if err != nil {
+		return nil, err
+	}
+
+	var seminarsQuery []GetSeminar
+	rows, seminarErr := dbSetup.DB.Query(`SELECT 
+	si.seminarID AS 'SeminarID',
+	si.Title AS 'Title',
+	si.Duration AS 'Duration',
+	si.Date AS 'Date',
+	si.Time AS 'Time',
+	si.Location AS 'Location',
+	si.no_of_seats AS 'NoOfSeats',
+	si.cover_photo AS 'CoverPhoto'	
+	FROM seminar_info si
+	WHERE si.facultyID = ?`, facultyQuery.FacultyID)
+	if seminarErr != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		// Create a new User object
+		var seminar GetSeminar
+		// Scan the values from the current row into the User object
+		if err := rows.Scan(
+			&seminar.SeminarID,
+			&seminar.Title,
+			&seminar.Duration,
+			&seminar.Date,
+			&seminar.Time,
+			&seminar.Location,
+			&seminar.NoOfSeats,
+			&seminar.CoverPhoto); err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+		// Append the User object to the array
+		seminarsQuery = append(seminarsQuery, seminar)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error iterating over rows:", err)
+		return nil, err
+	}
+
+	var response GetFacultySeminars
+	response.Faculty = facultyQuery
+	response.Seminars = seminarsQuery
+	return &response, nil
+}
+
+type GetFacultySeminars struct {
+	Faculty  GetFaculty   `json:"faculty"`
+	Seminars []GetSeminar `json:"seminars"`
+}
+
+type GetFaculty struct {
+	FacultyName string
+	FacultyID   int
+}
+
+type GetSeminar struct {
+	SeminarID  int     `json:"seminarID"`
+	Title      string  `json:"Title"`
+	Duration   float32 `json:"Duration"`
+	Date       string  `json:"Date"`
+	Time       string  `json:"Time"`
+	Location   string  `json:"Location"`
+	NoOfSeats  int     `json:"no_of_seats"`
+	CoverPhoto string  `json:"cover_photo"`
 }

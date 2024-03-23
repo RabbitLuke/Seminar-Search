@@ -63,12 +63,11 @@ func Authenticate(c *gin.Context) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"Email":  user.Email,
 		"IsHost": hostCount > 0,
-		"exp":    time.Now(),
-		//"exp":      time.Now().Add(time.Minute * 15).Unix(), // Token expires in 15 minutes
+		"exp":    time.Now().Add(time.Hour * 24 * 7).Unix(), // Token expires in 15 minutes
 	})
 
 	// Sign the token with the secret key
-	tokenString, err := token.SignedString([]byte("your-secret-key")) // Replace "your-secret-key" with your own secret key
+	tokenString, err := token.SignedString([]byte("test")) // Replace "your-secret-key" with your own secret key
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -81,7 +80,7 @@ func Authenticate(c *gin.Context) {
 	})
 
 	// Sign the refresh token with the secret key
-	refreshTokenString, err := refreshToken.SignedString([]byte("your-secret-key")) // Replace "your-secret-key" with your own secret key
+	refreshTokenString, err := refreshToken.SignedString([]byte("test")) // Replace "your-secret-key" with your own secret key
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -107,7 +106,7 @@ func RefreshToken(c *gin.Context) {
 	}
 
 	token, err := jwt.Parse(refreshRequest.RefreshToken, func(token *jwt.Token) (interface{}, error) {
-		return []byte("your-secret-key"), nil // Replace "your-secret-key" with your own refresh secret key
+		return []byte("test"), nil // Replace "your-secret-key" with your own refresh secret key
 	})
 	if err != nil || !token.Valid {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
@@ -134,7 +133,7 @@ func RefreshToken(c *gin.Context) {
 	})
 
 	// Sign the new token with the secret key
-	newTokenString, err := newToken.SignedString([]byte("your-secret-key")) // Replace "your-secret-key" with your own secret key
+	newTokenString, err := newToken.SignedString([]byte("test")) // Replace "your-secret-key" with your own secret key
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -146,7 +145,7 @@ func RefreshToken(c *gin.Context) {
 	})
 
 	// Sign the refresh token with the secret key
-	newRefreshTokenString, err := refreshToken.SignedString([]byte("your-secret-key")) // Replace "your-secret-key" with your own secret key
+	newRefreshTokenString, err := refreshToken.SignedString([]byte("test")) // Replace "your-secret-key" with your own secret key
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

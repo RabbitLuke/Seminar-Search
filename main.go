@@ -6,10 +6,11 @@ import (
 	"net/http"
 
 	"github.com/RabbitLuke/seminar-search/api"
+	auth "github.com/RabbitLuke/seminar-search/auth"
 	dbSetup "github.com/RabbitLuke/seminar-search/dbSetup"
+	middleware "github.com/RabbitLuke/seminar-search/middleware"
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors"
-	auth "github.com/RabbitLuke/seminar-search/auth"
 )
 
 func main() {
@@ -22,7 +23,6 @@ func main() {
 
 	router := gin.Default()
 
-	
 	// Import and use functions from api_faculty.go
 	apiFaculty := router.Group("/faculty")
 	{
@@ -48,8 +48,9 @@ func main() {
 		apiUser.DELETE("/remove/:UserID", api.DeleteUserHandler)
 		apiUser.PUT("/update/", api.UpdateUserHandler)
 		apiUser.GET("/distinct/:UserID", api.SelectUserByIDHandler)
+		apiUser.GET("/getuserdashboard", middleware.JWTMiddleware(), api.GetUserFacultyAndSeminars)
 	}
-	
+
 	apiHost := router.Group("/host")
 	{
 		apiHost.POST("/create", api.CreateHostHandler)
@@ -69,7 +70,6 @@ func main() {
 	if err := router.Run(":8080"); err != nil {
 		panic(err)
 	}
-	
 
 	//CORS stuff
 	//router.Use(gin.WrapH(cors.Default().Handler(http.DefaultServeMux)))

@@ -1,4 +1,4 @@
-package main
+package middleware
 
 import (
 	"fmt"
@@ -26,16 +26,14 @@ func JWTMiddleware() gin.HandlerFunc {
 
 		tokenString := splitToken[1]
 
-		println("#######################")
-		println(tokenString)
-
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			// Verify the token signing method and return the secret key
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
-			return []byte("your-secret-key"), nil
+			return []byte("test"), nil
 		})
+
 		if err != nil {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
@@ -52,19 +50,14 @@ func JWTMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		expirationString, ok := claims["exp"].(string)
+		exp, ok := claims["exp"].(float64)
 		if !ok {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 
-		expirationTime, err := time.Parse(time.RFC3339, expirationString)
-		if err != nil {
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-
-		if time.Now().UTC().After(expirationTime) {
+		expTime := time.Unix(int64(exp), 0)
+		if time.Now().After(expTime) {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}

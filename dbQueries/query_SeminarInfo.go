@@ -1,22 +1,22 @@
 package query
 
-
 import (
 	"fmt"
 	"time"
+
 	"github.com/RabbitLuke/seminar-search/dbSetup"
 )
 
 type SeminarInfo struct {
-	SeminarID int `json:"seminarID"`
-	Title string `json:"Title"`
-	FacultyID int `json:"facultyID"`
-	Duration float32 `json:"Duration"`
-	Date string `json:"Date"`
-	Time string `json:"Time"`
-	Location string `json:"Location"`
-	NoOfSeats int `json:"no_of_seats"`
-	CoverPhoto string `json:"cover_photo"`
+	SeminarID  int     `json:"seminarID"`
+	Title      string  `json:"Title"`
+	FacultyID  int     `json:"facultyID"`
+	Duration   float32 `json:"Duration"`
+	Date       string  `json:"Date"`
+	Time       string  `json:"Time"`
+	Location   string  `json:"Location"`
+	NoOfSeats  int     `json:"no_of_seats"`
+	CoverPhoto string  `json:"cover_photo"`
 }
 
 func InsertSeminar(title string, facultyID int, duration float32, date string, time string, location string, noOfSeats int, coverPhoto string) error {
@@ -81,7 +81,6 @@ func UpdateSeminar(seminarID int, title string, facultyID int, duration float32,
 	// Combine the date and time into a single time.Time value
 	dateTime := time.Date(date.Year(), date.Month(), date.Day(), timeOfDay.Hour(), timeOfDay.Minute(), timeOfDay.Second(), 0, time.UTC)
 
-
 	stmt, err := dbSetup.DB.Prepare("UPDATE seminar_info SET Title = ?, facultyID = ?, Duration = ?, Date = ?, Time = ?, Location = ?, no_of_seats = ?, cover_photo = ? WHERE seminarID = ?")
 	if err != nil {
 		return err
@@ -134,4 +133,3 @@ func SelectSeminarByID(seminarID int) (*SeminarInfo, error) {
 
 	return &seminar, nil
 }
-
