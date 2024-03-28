@@ -159,6 +159,20 @@ func GetUserFacultyAndSeminary(email string) (*GetFacultySeminars, error) {
 	return &response, nil
 }
 
+func GetUserByEmail(email string) (*UserInfo, error) {
+	if dbSetup.DB == nil {
+		return nil, fmt.Errorf("database is not initialized")
+	}
+
+	var user UserInfo
+	err := dbSetup.DB.QueryRow("SELECT * FROM user_information WHERE Email = ?", email).Scan(&user.UserId, &user.F_name, &user.L_name, &user.Faculty, &user.Email, &user.Profile_pic, &user.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 type GetFacultySeminars struct {
 	Faculty  GetFaculty   `json:"faculty"`
 	Seminars []GetSeminar `json:"seminars"`
@@ -171,11 +185,11 @@ type GetFaculty struct {
 
 type GetSeminar struct {
 	SeminarID  int     `json:"seminarID"`
-	Title      string  `json:"Title"`
-	Duration   float32 `json:"Duration"`
-	Date       string  `json:"Date"`
-	Time       string  `json:"Time"`
-	Location   string  `json:"Location"`
+	Title      string  `json:"title"`
+	Duration   float32 `json:"duration"`
+	Date       string  `json:"date"`
+	Time       string  `json:"time"`
+	Location   string  `json:"location"`
 	NoOfSeats  int     `json:"no_of_seats"`
 	CoverPhoto string  `json:"cover_photo"`
 }

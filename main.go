@@ -48,6 +48,7 @@ func main() {
 		apiUser.DELETE("/remove/:UserID", api.DeleteUserHandler)
 		apiUser.PUT("/update/", api.UpdateUserHandler)
 		apiUser.GET("/distinct/:UserID", api.SelectUserByIDHandler)
+		apiUser.GET("/getuser", middleware.JWTMiddleware(), api.GetUserByEmail)
 		apiUser.GET("/getuserdashboard", middleware.JWTMiddleware(), api.GetUserFacultyAndSeminars)
 	}
 

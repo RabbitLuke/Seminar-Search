@@ -11,7 +11,7 @@ type HostInfo struct {
 	F_name              string `json:"First_Name"`
 	L_name              string `json:"Last_Name"`
 	Faculty             int    `json:"Faculty"`
-	Qualifications int `json:"Qualifications"`
+	Qualifications      int    `json:"Qualifications"`
 	Years_of_Experience int    `json:"Years_of_Experience"`
 	Email               string `json:"Email"`
 	Profile_pic         string `json:"Profile_pic"`
@@ -25,8 +25,8 @@ func InsertHost(f_name string, l_name string, faculty int, Qualifications int, y
 	}
 
 	// Prepare the SQL statement
-	stmt, err := dbSetup.DB.Prepare("INSERT INTO host_information (First_Name, Last_Name, Qualifications, Faculty, Years_of_Experience, Email, Profile_pic, Password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-	fmt.Println(f_name, l_name, email)
+	stmt, err := dbSetup.DB.Prepare("INSERT INTO host_information (First_Name, Last_Name, Faculty, Qualifications, Years_of_Experience, Email, Profile_pic, Password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	fmt.Println(f_name, l_name, email, faculty, Qualifications)
 	if err != nil {
 		return err
 	}
