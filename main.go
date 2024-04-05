@@ -4,7 +4,6 @@ package main
 import (
 	"log"
 	"net/http"
-
 	"github.com/RabbitLuke/seminar-search/api"
 	auth "github.com/RabbitLuke/seminar-search/auth"
 	dbSetup "github.com/RabbitLuke/seminar-search/dbSetup"
@@ -23,7 +22,6 @@ func main() {
 
 	router := gin.Default()
 
-	// Import and use functions from api_faculty.go
 	apiFaculty := router.Group("/faculty")
 	{
 		apiFaculty.POST("/create", api.CreateHandler)
@@ -40,6 +38,7 @@ func main() {
 		apiSeminar.PUT("/update", api.UpdateSeminarHandler)
 		apiSeminar.GET("/all", api.SelectSeminarHandler)
 		apiSeminar.GET("/distinct/:seminarID", api.SelectSeminarByIDHandler)
+		apiSeminar.GET("/getseminarbyfaculty/:facultyId", api.GetSeminarsByFaculty)
 	}
 
 	apiUser := router.Group("/user")
@@ -72,11 +71,9 @@ func main() {
 		panic(err)
 	}
 
-	//CORS stuff
-	//router.Use(gin.WrapH(cors.Default().Handler(http.DefaultServeMux)))
-
+	
 	corsConfig := cors.New(cors.Options{
-		AllowedOrigins:   []string{"127.0.0.1:8000"}, // Replace with your frontend's URL
+		AllowedOrigins:   []string{"FrontendURL"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Origin", "Content-Type"},
 		AllowCredentials: true,

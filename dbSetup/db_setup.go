@@ -1,4 +1,4 @@
-// db_setup.go
+
 package dbSetup
 
 import (
@@ -9,9 +9,8 @@ import (
 
 var DB *sql.DB
 
-// InitDB initializes the database connection
 func InitDB() error {
-    connectionString := "root:Banana10#@tcp(localhost:3306)/seminarsearch"
+    connectionString := "dbStringHere"
     var err error
     DB, err = sql.Open("mysql", connectionString)
     if err != nil {
@@ -28,7 +27,6 @@ func InitDB() error {
     return nil
 }
 
-// CloseDB closes the database connection
 func CloseDB() {
     if DB != nil {
         DB.Close()

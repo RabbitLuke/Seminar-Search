@@ -1,33 +1,27 @@
-// queryUsers.go
+
 package query
 
 import (
 	"fmt"
-
 	"github.com/RabbitLuke/seminar-search/dbSetup"
 )
 
-// You also need to define a User struct at the beginning of the queryUsers.go file
 type Faculty struct {
 	FacultyID int    `json:"facultyID"`
 	Name      string `json:"name"`
 }
 
-// InsertUser inserts a new user into the Faculty table
 func InsertFaculty(name string) error {
-	// Ensure that the database is initialized
 	if dbSetup.DB == nil {
 		return fmt.Errorf("database is not initialized")
 	}
 
-	// Prepare the SQL statement
 	stmt, err := dbSetup.DB.Prepare("INSERT INTO Faculty (Name) VALUES (?)")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	// Execute the prepared statement with the provided values
 	_, err = stmt.Exec(name)
 	if err != nil {
 		return err
@@ -38,19 +32,16 @@ func InsertFaculty(name string) error {
 }
 
 func DeleteFaculty(facultyID int) error {
-	// Ensure that the database is initialized
 	if dbSetup.DB == nil {
 		return fmt.Errorf("database is not initialized")
 	}
 
-	// Prepare the SQL statement
 	stmt, err := dbSetup.DB.Prepare("DELETE FROM Faculty WHERE facultyID = ?")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	// Execute the prepared statement with the provided facultyID
 	_, err = stmt.Exec(facultyID)
 	if err != nil {
 		return err

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +26,6 @@ func JWTMiddleware() gin.HandlerFunc {
 		tokenString := splitToken[1]
 
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			// Verify the token signing method and return the secret key
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}

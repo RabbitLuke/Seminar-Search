@@ -3,7 +3,6 @@ package api
 import (
 	"net/http"
 	"strconv"
-
 	query "github.com/RabbitLuke/seminar-search/dbQueries"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -49,21 +48,18 @@ func CreateUserHandler(c *gin.Context) {
 }
 
 func DeleteUserHandler(c *gin.Context) {
-	// Extract UserID from the URL parameter
 	UserID, err := strconv.Atoi(c.Param("UserID"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UserID"})
 		return
 	}
 
-	// Call the DeleteUser function with the extracted UserID
 	err = query.DeleteUser(UserID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Return a success status
 	c.Status(http.StatusOK)
 }
 
@@ -101,7 +97,6 @@ func SelectUserByIDHandler(c *gin.Context) {
 }
 
 func GetUserFacultyAndSeminars(c *gin.Context) {
-	//extract the user from the jwt
 	claims := c.Value("user").(jwt.MapClaims)
 	email := claims["Email"].(string)
 	data, err := query.GetUserFacultyAndSeminary(email)
@@ -113,7 +108,6 @@ func GetUserFacultyAndSeminars(c *gin.Context) {
 }
 
 func GetUserByEmail(c *gin.Context) {
-	//extract the user from the jwt
 	claims := c.Value("user").(jwt.MapClaims)
 	email := claims["Email"].(string)
 	data, err := query.GetUserByEmail(email)
@@ -124,9 +118,3 @@ func GetUserByEmail(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
-func Test() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		println("#######################")
-		c.Next()
-	}
-}

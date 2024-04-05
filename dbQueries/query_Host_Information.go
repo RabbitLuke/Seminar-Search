@@ -2,7 +2,6 @@ package query
 
 import (
 	"fmt"
-
 	"github.com/RabbitLuke/seminar-search/dbSetup"
 )
 
@@ -19,12 +18,10 @@ type HostInfo struct {
 }
 
 func InsertHost(f_name string, l_name string, faculty int, Qualifications int, years_of_experience int, email string, profile_pic string, password string) error {
-	// Ensure that the database is initialized
 	if dbSetup.DB == nil {
 		return fmt.Errorf("database is not initialized")
 	}
 
-	// Prepare the SQL statement
 	stmt, err := dbSetup.DB.Prepare("INSERT INTO host_information (First_Name, Last_Name, Faculty, Qualifications, Years_of_Experience, Email, Profile_pic, Password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 	fmt.Println(f_name, l_name, email, faculty, Qualifications)
 	if err != nil {
@@ -32,7 +29,6 @@ func InsertHost(f_name string, l_name string, faculty int, Qualifications int, y
 	}
 	defer stmt.Close()
 
-	// Execute the prepared statement with the provided values
 	_, err = stmt.Exec(f_name, l_name, faculty, Qualifications, years_of_experience, email, profile_pic, password)
 	if err != nil {
 		return err
@@ -43,7 +39,6 @@ func InsertHost(f_name string, l_name string, faculty int, Qualifications int, y
 }
 
 func DeleteHost(HostID int) error {
-	// Ensure that the database is initialized
 	if dbSetup.DB == nil {
 		return fmt.Errorf("database is not initialized")
 	}

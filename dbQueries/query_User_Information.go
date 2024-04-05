@@ -2,7 +2,6 @@ package query
 
 import (
 	"fmt"
-
 	"github.com/RabbitLuke/seminar-search/dbSetup"
 )
 
@@ -17,12 +16,10 @@ type UserInfo struct {
 }
 
 func InsertUser(f_name string, l_name string, faculty int, email string, profile_pic string, password string) error {
-	// Ensure that the database is initialized
 	if dbSetup.DB == nil {
 		return fmt.Errorf("database is not initialized")
 	}
 
-	// Prepare the SQL statement
 	stmt, err := dbSetup.DB.Prepare("INSERT INTO user_information (First_Name, Last_Name, Faculty, Email, Profile_pic, Password) VALUES (?, ?, ?, ?, ?, ?)")
 	fmt.Println(f_name, l_name, email)
 	if err != nil {
@@ -30,7 +27,6 @@ func InsertUser(f_name string, l_name string, faculty int, email string, profile
 	}
 	defer stmt.Close()
 
-	// Execute the prepared statement with the provided values
 	_, err = stmt.Exec(f_name, l_name, faculty, email, profile_pic, password)
 	if err != nil {
 		return err
@@ -41,7 +37,6 @@ func InsertUser(f_name string, l_name string, faculty int, email string, profile
 }
 
 func DeleteUser(UserID int) error {
-	// Ensure that the database is initialized
 	if dbSetup.DB == nil {
 		return fmt.Errorf("database is not initialized")
 	}
@@ -71,7 +66,6 @@ func UpdateUser(userID int, f_name string, l_name string, faculty int, email str
 		return err
 	}
 	defer stmt.Close()
-	//Please make sure that you add the ID at the END of the statement! Otherwise it won't write to the DB
 	res, err := stmt.Exec(f_name, l_name, faculty, email, profile_pic, password, userID)
 	if err != nil {
 		fmt.Println("Error executing update query:", err)
@@ -100,7 +94,6 @@ func SelectUserByID(userID int) (*UserInfo, error) {
 
 func GetUserFacultyAndSeminary(email string) (*GetFacultySeminars, error) {
 
-	//return get user faculty and seminars linked to faculty
 	var facultyQuery GetFaculty
 	err := dbSetup.DB.QueryRow(`SELECT 
 	ui.Faculty AS 'FacultyID',
@@ -129,9 +122,7 @@ func GetUserFacultyAndSeminary(email string) (*GetFacultySeminars, error) {
 	}
 
 	for rows.Next() {
-		// Create a new User object
 		var seminar GetSeminar
-		// Scan the values from the current row into the User object
 		if err := rows.Scan(
 			&seminar.SeminarID,
 			&seminar.Title,
@@ -144,7 +135,6 @@ func GetUserFacultyAndSeminary(email string) (*GetFacultySeminars, error) {
 			fmt.Println("Error scanning row:", err)
 			return nil, err
 		}
-		// Append the User object to the array
 		seminarsQuery = append(seminarsQuery, seminar)
 	}
 

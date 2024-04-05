@@ -1,4 +1,4 @@
-// api_faculty.go
+
 package api
 
 import (
