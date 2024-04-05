@@ -1,6 +1,5 @@
 package query
 
-
 import (
 	"fmt"
 	"time"
@@ -8,19 +7,18 @@ import (
 )
 
 type SeminarInfo struct {
-	SeminarID int `json:"seminarID"`
-	Title string `json:"Title"`
-	FacultyID int `json:"facultyID"`
-	Duration float32 `json:"Duration"`
-	Date string `json:"Date"`
-	Time string `json:"Time"`
-	Location string `json:"Location"`
-	NoOfSeats int `json:"no_of_seats"`
-	CoverPhoto string `json:"cover_photo"`
+	SeminarID  int     `json:"seminarID"`
+	Title      string  `json:"Title"`
+	FacultyID  int     `json:"facultyID"`
+	Duration   float32 `json:"Duration"`
+	Date       string  `json:"Date"`
+	Time       string  `json:"Time"`
+	Location   string  `json:"Location"`
+	NoOfSeats  int     `json:"no_of_seats"`
+	CoverPhoto string  `json:"cover_photo"`
 }
 
 func InsertSeminar(title string, facultyID int, duration float32, date string, time string, location string, noOfSeats int, coverPhoto string) error {
-	// Ensure that the database is initialized
 	if dbSetup.DB == nil {
 		return fmt.Errorf("database is not initialized")
 	}
@@ -41,7 +39,6 @@ func InsertSeminar(title string, facultyID int, duration float32, date string, t
 }
 
 func DeleteSeminar(seminarID int) error {
-	// Ensure that the database is initialized
 	if dbSetup.DB == nil {
 		return fmt.Errorf("database is not initialized")
 	}
@@ -66,21 +63,17 @@ func UpdateSeminar(seminarID int, title string, facultyID int, duration float32,
 		return fmt.Errorf("database is not initialized")
 	}
 
-	// Parse the date string into a time.Time value
 	date, err := time.Parse("2006-01-02", dateString)
 	if err != nil {
 		return fmt.Errorf("error parsing date: %v", err)
 	}
 
-	// Parse the time string into a time.Time value
 	timeOfDay, err := time.Parse("15:04:05", timeString)
 	if err != nil {
 		return fmt.Errorf("error parsing time: %v", err)
 	}
 
-	// Combine the date and time into a single time.Time value
 	dateTime := time.Date(date.Year(), date.Month(), date.Day(), timeOfDay.Hour(), timeOfDay.Minute(), timeOfDay.Second(), 0, time.UTC)
-
 
 	stmt, err := dbSetup.DB.Prepare("UPDATE seminar_info SET Title = ?, facultyID = ?, Duration = ?, Date = ?, Time = ?, Location = ?, no_of_seats = ?, cover_photo = ? WHERE seminarID = ?")
 	if err != nil {
@@ -135,3 +128,48 @@ func SelectSeminarByID(seminarID int) (*SeminarInfo, error) {
 	return &seminar, nil
 }
 
+func GetSeminarsByFaculty(facultyId int) (*[]GetSeminar, error) {
+	if dbSetup.DB == nil {
+		return nil, fmt.Errorf("database is not initialized")
+	}
+
+	var seminarsQuery []GetSeminar
+	rows, seminarErr := dbSetup.DB.Query(`SELECT 
+	si.seminarID AS 'SeminarID',
+	si.Title AS 'Title',
+	si.Duration AS 'Duration',
+	si.Date AS 'Date',
+	si.Time AS 'Time',
+	si.Location AS 'Location',
+	si.no_of_seats AS 'NoOfSeats',
+	si.cover_photo AS 'CoverPhoto'	
+	FROM seminar_info si
+	WHERE si.facultyID = ?`, facultyId)
+	if seminarErr != nil {
+		return nil, seminarErr
+	}
+
+	for rows.Next() {
+		var seminar GetSeminar
+		if err := rows.Scan(
+			&seminar.SeminarID,
+			&seminar.Title,
+			&seminar.Duration,
+			&seminar.Date,
+			&seminar.Time,
+			&seminar.Location,
+			&seminar.NoOfSeats,
+			&seminar.CoverPhoto); err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+		seminarsQuery = append(seminarsQuery, seminar)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error iterating over rows:", err)
+		return nil, err
+	}
+
+	return &seminarsQuery, nil
+}

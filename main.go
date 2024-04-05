@@ -4,12 +4,12 @@ package main
 import (
 	"log"
 	"net/http"
-
 	"github.com/RabbitLuke/seminar-search/api"
+	auth "github.com/RabbitLuke/seminar-search/auth"
 	dbSetup "github.com/RabbitLuke/seminar-search/dbSetup"
+	middleware "github.com/RabbitLuke/seminar-search/middleware"
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors"
-	auth "github.com/RabbitLuke/seminar-search/auth"
 )
 
 func main() {
@@ -22,8 +22,6 @@ func main() {
 
 	router := gin.Default()
 
-	
-	// Import and use functions from api_faculty.go
 	apiFaculty := router.Group("/faculty")
 	{
 		apiFaculty.POST("/create", api.CreateHandler)
@@ -40,6 +38,7 @@ func main() {
 		apiSeminar.PUT("/update", api.UpdateSeminarHandler)
 		apiSeminar.GET("/all", api.SelectSeminarHandler)
 		apiSeminar.GET("/distinct/:seminarID", api.SelectSeminarByIDHandler)
+		apiSeminar.GET("/getseminarbyfaculty/:facultyId", api.GetSeminarsByFaculty)
 	}
 
 	apiUser := router.Group("/user")
@@ -48,8 +47,10 @@ func main() {
 		apiUser.DELETE("/remove/:UserID", api.DeleteUserHandler)
 		apiUser.PUT("/update/", api.UpdateUserHandler)
 		apiUser.GET("/distinct/:UserID", api.SelectUserByIDHandler)
+		apiUser.GET("/getuser", middleware.JWTMiddleware(), api.GetUserByEmail)
+		apiUser.GET("/getuserdashboard", middleware.JWTMiddleware(), api.GetUserFacultyAndSeminars)
 	}
-	
+
 	apiHost := router.Group("/host")
 	{
 		apiHost.POST("/create", api.CreateHostHandler)
@@ -69,13 +70,10 @@ func main() {
 	if err := router.Run(":8080"); err != nil {
 		panic(err)
 	}
+
 	
-
-	//CORS stuff
-	//router.Use(gin.WrapH(cors.Default().Handler(http.DefaultServeMux)))
-
 	corsConfig := cors.New(cors.Options{
-		AllowedOrigins:   []string{"127.0.0.1:8000"}, // Replace with your frontend's URL
+		AllowedOrigins:   []string{"FrontendURL"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Origin", "Content-Type"},
 		AllowCredentials: true,
